@@ -119,108 +119,120 @@
 // };
 
 // export default TextComparison;
-import React, { useState } from 'react';
 
-function TextComparison() {
-  const [pastedContent, setPastedContent] = useState('');
-  const [copiedHistory, setCopiedHistory] = useState<string[]>([]);
-
-  const handlePaste = (event:React.ClipboardEvent<HTMLTextAreaElement>) => {
-    if(event.clipboardData)
-    {const pastedText = event.clipboardData.getData('text');
-    setPastedContent(pastedText);
-
-    // Add the pasted text to the history
-    setCopiedHistory([...copiedHistory, pastedText]);}
-  };
-
-  return (
-    <div>
-      <h1>Paste Example</h1>
-      <textarea
-        placeholder="Paste here..."
-        onPaste={handlePaste}
-        style={{ width: '300px', height: '150px' }}
-      />
-      <div>
-        <h2>Pasted Content:</h2>
-        <p>{pastedContent}</p>
-      </div>
-      <div>
-        <h2>Copied History:</h2>
-        <ul>
-          {copiedHistory.map((item, index) => (
-            <li key={index}>{item}</li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
-
-export default TextComparison;
-
+// //KEEP THIS ONE
 // import React, { useState } from "react";
 
-// function TextComparison() {
-//   const [pastedContent, setPastedContent] = useState("");
-//   const [copiedHistory, setCopiedHistory] = useState([]);
-//   const [typedText, setTypedText] = useState("");
+// const TextComparison: React.FC = () => {
+//   const [text, setText] = useState("");
+//   const [pastedText, setPastedText] = useState("");
 
-//   const handlePaste = (event) => {
-//     const pastedText = event.clipboardData.getData("text");
-//     setPastedContent(pastedText);
-
-//     // Add the pasted text to the history
-//     setCopiedHistory([...copiedHistory, pastedText]);
-
-//     // Clear the typed text
-//     setTypedText("");
+//   const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+//     setText(event.target.value);
+//   };
+// //
+//   const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+//     event.preventDefault();
+//     const pasted = event.clipboardData.getData("text");
+//     setPastedText(pasted);
+//     const updatedText = text + pasted;
+//     setText(updatedText);
 //   };
 
-//   const handleInputChange = (event) => {
-//     const text = event.target.value;
-//     setTypedText(text);
-
-//     // Add the typed text to the history with white color
-//     setCopiedHistory([...copiedHistory, text]);
+//   const renderHighlightedText = () => {
+//     const parts = text.split(pastedText);
+//     return parts.map((part, index) => (
+//       <span key={index}>
+//         {index > 0 && <span style={{ color: "yellow" }}>{pastedText}</span>}
+//         {part}
+//       </span>
+//     ));
 //   };
 
 //   return (
 //     <div>
-//       <h1>Paste Example</h1>
 //       <textarea
-//         placeholder="Paste here..."
+//         rows={5}
+//         cols={50}
+//         value={text}
+//         onChange={handleTextChange}
 //         onPaste={handlePaste}
-//         onChange={handleInputChange}
-//         value={typedText}
-//         style={{ width: "300px", height: "150px" }}
+//         placeholder="Type or paste something..."
 //       />
 //       <div>
-//         <h2>Pasted Content:</h2>
-//         <p style={{ color: "yellow" }}>{pastedContent}</p>
-//       </div>
-//       <div>
-//         <h2>Copied History:</h2>
-//         <p>
-//           {copiedHistory.map((item, index) => (
-//             <span
-//               key={index}
-//               style={{
-//                 // backgroundColor: item === pastedContent ? 'yellow' : 'transparent',
-//                 color: item === pastedContent ? "yellow" : "white",
-//                 marginRight: "5px",
-//                 padding: "2px",
-//                 display: "inline-block",
-//               }}
-//             >
-//               {item}
-//             </span>
-//           ))}
-//         </p>
+//         <h2>Text from TextArea:</h2>
+//         <p>{renderHighlightedText()}</p>
 //       </div>
 //     </div>
 //   );
-// }
+// };
 
-// export default TextComparison;
+// // export default TextComparison;
+import React, { useState, useRef } from "react";
+
+const TextComparison: React.FC = () => {
+  const [text, setText] = useState("");
+  const [pastedText, setPastedText] = useState("");
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+  const handleTextChange = (event: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(event.target.value);
+  };
+
+  const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
+    event.preventDefault();
+    const pasted = event.clipboardData.getData("text");
+    setPastedText(pasted);
+
+    const textarea = textareaRef.current;
+    if (textarea) {
+      const selectionStart = textarea.selectionStart || 0;
+      const selectionEnd = textarea.selectionEnd || 0;
+      const updatedText =
+        text.substring(0, selectionStart) +
+        pasted +
+        text.substring(selectionEnd);
+      setText(updatedText);
+      textarea.focus();
+      textarea.setSelectionRange(
+        selectionStart + pasted.length,
+        selectionStart + pasted.length
+      );
+    }
+  };
+
+  const renderHighlightedText = () => {
+    const parts = text.split(pastedText);
+    return parts.map((part, index) => (
+      <span key={index}>
+        {index > 0 && <span style={{ color: "yellow" }}>{pastedText}</span>}
+        {part}
+      </span>
+    ));
+  };
+
+  return (
+    <div>
+      <textarea
+        ref={textareaRef}
+        rows={5}
+        cols={50}
+        value={text}
+        onChange={handleTextChange}
+        onPaste={handlePaste}
+        placeholder="Type or paste something..."
+      />
+      <div>
+        <h2>Text from TextArea:</h2>
+        <p>{renderHighlightedText()}</p>
+      </div>
+    </div>
+  );
+};
+
+export default TextComparison;
+
+
+
+
+
