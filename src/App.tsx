@@ -1,10 +1,12 @@
 import "./App.css";
-import TextComparison from "./TextComparison";
+import DefineWord from "./DefineWorld";
+// import TextComparison from "./TextComparison";
 
 function App() {
   return (
     <>
-      <TextComparison />
+      {/* <TextComparison /> */}
+      <DefineWord />
     </>
   );
 }
