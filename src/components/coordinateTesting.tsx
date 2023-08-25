@@ -282,7 +282,7 @@
 //   );
 // }
 
-// export default CoordinateTesting;
+// // export default CoordinateTesting;
 // import React, { useState } from "react";
 
 // interface Highlight {
@@ -306,12 +306,18 @@
 
 //     // Update coordinates for highlights that are on the right side of the cursor
 //     const updatedHighlights = highlights.map((highlight) => ({
-//       start: highlight.start > cursorPosition ? highlight.start + 1 : highlight.start,
+//       start:
+//         highlight.start > cursorPosition
+//           ? highlight.start + 1
+//           : highlight.start,
 //       end: highlight.end > cursorPosition ? highlight.end + 1 : highlight.end,
 //     }));
 
 //     const updatedPreviousHighlights = previousHighlights.map((highlight) => ({
-//       start: highlight.start > cursorPosition ? highlight.start + 1 : highlight.start,
+//       start:
+//         highlight.start > cursorPosition
+//           ? highlight.start + 1
+//           : highlight.start,
 //       end: highlight.end > cursorPosition ? highlight.end + 1 : highlight.end,
 //     }));
 
@@ -319,9 +325,8 @@
 //     setCursorPosition(event.target.selectionStart || 0);
 //     setHighlights(updatedHighlights);
 //     setPreviousHighlights(updatedPreviousHighlights);
+//     console.log("first");
 //   };
-
-  
 
 //   const handleCursorPositionChange = (
 //     event: React.SyntheticEvent<HTMLTextAreaElement>
@@ -340,24 +345,83 @@
 
 //     setTextToHighlight(newText);
 
+//     const pastedTextLength = pastedText.length;
+
 //     // Update coordinates for highlights that are on the right side of the cursor
 //     const updatedHighlights = highlights.map((highlight) => ({
-//       start: highlight.start > cursorPosition ? highlight.start + pastedText.length : highlight.start,
-//       end: highlight.end > cursorPosition ? highlight.end + pastedText.length : highlight.end,
+//       start:
+//         highlight.start > cursorPosition
+//           ? highlight.start + pastedTextLength
+//           : highlight.start,
+//       end:
+//         highlight.end > cursorPosition
+//           ? highlight.end + pastedTextLength
+//           : highlight.end,
 //     }));
 
-//     setCursorPosition(cursorPosition + pastedText.length);
+//     setCursorPosition(cursorPosition + pastedTextLength);
 //     setHighlights(updatedHighlights);
 
 //     const newHighlight: Highlight = {
 //       start: cursorPosition,
-//       end: cursorPosition + pastedText.length,
+//       end: cursorPosition + pastedTextLength,
 //     };
 
 //     setPreviousHighlights([...highlights]);
 //     setHighlights([...highlights, newHighlight]);
 
 //     event.preventDefault();
+//   };
+//   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+//     if (event.key === "Backspace" || event.key === "Delete") {
+//       const selectionStart = event.currentTarget.selectionStart || 0;
+//       const selectionEnd = event.currentTarget.selectionEnd || 0;
+//       const selectionLength = selectionEnd - selectionStart;
+
+//       const updatedHighlights = highlights
+//         .map((highlight) => {
+//           let newStart = highlight.start;
+//           let newEnd = highlight.end;
+
+//           if (highlight.start > selectionEnd) {
+//             newStart -= selectionLength;
+//             newEnd -= selectionLength;
+//           } else if (highlight.start > selectionStart) {
+//             newStart = selectionStart;
+//             newEnd -= selectionLength;
+//           }
+
+//           return {
+//             start: newStart,
+//             end: newEnd,
+//           };
+//         })
+//         .filter((highlight) => highlight.start !== highlight.end);
+
+//       const updatedPreviousHighlights = previousHighlights
+//         .map((highlight) => {
+//           let newStart = highlight.start;
+//           let newEnd = highlight.end;
+
+//           if (highlight.start > selectionEnd) {
+//             newStart -= selectionLength+1;
+//             newEnd -= selectionLength+1;
+//           } else if (highlight.start > selectionStart) {
+//             newStart = selectionStart+1;
+//             newEnd -= selectionLength+1;
+//           }
+
+//           return {
+//             start: newStart,
+//             end: newEnd,
+//           };
+//         })
+//         .filter((highlight) => highlight.start !== highlight.end);
+
+//       setHighlights(updatedHighlights);
+//       setPreviousHighlights(updatedPreviousHighlights);
+//       console.log("keydown")
+//     }
 //   };
 
 //   return (
@@ -368,6 +432,7 @@
 //         onChange={handleTextareaChange}
 //         onSelect={handleCursorPositionChange}
 //         onPaste={handlePaste}
+//         onKeyDown={handleKeyDown}
 //         rows={5}
 //         cols={50}
 //       />
@@ -402,7 +467,6 @@
 
 // export default CoordinateTesting;
 
-
 import React, { useState } from "react";
 
 interface Highlight {
@@ -416,63 +480,49 @@ function CoordinateTesting() {
   const [textToHighlight, setTextToHighlight] = useState<string>(initialText);
   const [cursorPosition, setCursorPosition] = useState<number>(0);
   const [copiedText, setCopiedText] = useState<string | null>(null);
+  const [selectionStart, setSelectionStart] = useState<number>(0);
+  const [selectionEnd, setSelectionEnd] = useState<number>(0);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
   const [previousHighlights, setPreviousHighlights] = useState<Highlight[]>([]);
 
   const handleTextareaChange = (
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
-    setTextToHighlight(event.target.value);
+    const updatedText = event.target.value;
+
+    // Update coordinates for highlights that are on the right side of the cursor
+    const updatedHighlights = highlights.map((highlight) => ({
+      start:
+        highlight.start > cursorPosition
+          ? highlight.start + 1
+          : highlight.start,
+      end: highlight.end > cursorPosition ? highlight.end + 1 : highlight.end,
+    }));
+
+    const updatedPreviousHighlights = previousHighlights.map((highlight) => ({
+      start:
+        highlight.start > cursorPosition
+          ? highlight.start + 1
+          : highlight.start,
+      end: highlight.end > cursorPosition ? highlight.end + 1 : highlight.end,
+    }));
+
+    setTextToHighlight(updatedText);
     setCursorPosition(event.target.selectionStart || 0);
+    setHighlights(updatedHighlights);
+    setPreviousHighlights(updatedPreviousHighlights);
+    // console.log("first");
   };
 
   const handleCursorPositionChange = (
     event: React.SyntheticEvent<HTMLTextAreaElement>
   ) => {
-    setCursorPosition(event.currentTarget.selectionStart);
+    const currentSelectionStart = event.currentTarget.selectionStart || 0;
+    const currentSelectionEnd = event.currentTarget.selectionEnd || 0;
+    setSelectionStart(currentSelectionStart);
+    setSelectionEnd(currentSelectionEnd);
+    setCursorPosition(currentSelectionStart);
   };
-
-const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key === "Backspace" || event.key === "Delete") {
-      const removedTextLength = event.key === "Backspace" ? -1 : 0;
-      const newCursorPosition = cursorPosition + removedTextLength;
-  
-      // Remove highlights inside or intersecting with the removed text
-      const filteredHighlights = highlights.filter(
-        (highlight) =>
-          highlight.start < cursorPosition || highlight.end > newCursorPosition
-      );
-  
-      // Adjust highlights greater than the current position
-      const adjustedHighlights = filteredHighlights.map((highlight) => {
-        const adjustedStart =
-          highlight.start > cursorPosition
-            ? highlight.start + removedTextLength
-            : highlight.start;
-        const adjustedEnd =
-          highlight.end > cursorPosition
-            ? highlight.end + removedTextLength
-            : highlight.end;
-  
-        // If we reach a highlight coordinate, adjust its end to the current pointer
-        if (highlight.start <= newCursorPosition && highlight.end > newCursorPosition) {
-          return {
-            start: adjustedStart,
-            end: newCursorPosition,
-          };
-        }
-  
-        return {
-          start: adjustedStart,
-          end: adjustedEnd,
-        };
-      });
-  
-      setHighlights(adjustedHighlights);
-      setCursorPosition(newCursorPosition);
-    }
-  };
-  
 
   const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const pastedText = event.clipboardData.getData("text");
@@ -485,23 +535,332 @@ const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
 
     setTextToHighlight(newText);
 
+    const pastedTextLength = pastedText.length;
+
+    // Update coordinates for highlights that are on the right side of the cursor
     const updatedHighlights = highlights.map((highlight) => ({
-      start: highlight.start > cursorPosition ? highlight.start + pastedText.length : highlight.start,
-      end: highlight.end > cursorPosition ? highlight.end + pastedText.length : highlight.end,
+      start:
+        highlight.start > cursorPosition
+          ? highlight.start + pastedTextLength
+          : highlight.start,
+      end:
+        highlight.end > cursorPosition
+          ? highlight.end + pastedTextLength
+          : highlight.end,
     }));
 
-    setCursorPosition(cursorPosition + pastedText.length);
+    setCursorPosition(cursorPosition + pastedTextLength);
     setHighlights(updatedHighlights);
 
     const newHighlight: Highlight = {
       start: cursorPosition,
-      end: cursorPosition + pastedText.length,
+      end: cursorPosition + pastedTextLength,
     };
 
     setPreviousHighlights([...highlights]);
     setHighlights([...highlights, newHighlight]);
 
     event.preventDefault();
+  };
+
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  //   if (event.key === "Backspace" || event.key === "Delete") {
+  //     const selectionLength = selectionEnd - selectionStart;
+
+  //     const updatedText =
+  //       textToHighlight.slice(0, selectionStart) +
+  //       textToHighlight.slice(selectionEnd);
+
+  //     setTextToHighlight(updatedText);
+
+  //     const updatedHighlights = highlights
+  //       .map((highlight) => {
+  //         let newStart = highlight.start;
+  //         let newEnd = highlight.end;
+
+  //         if (highlight.start > selectionEnd) {
+  //           newStart -= selectionLength + 1;
+  //           newEnd -= selectionLength + 1;
+  //         } else if (highlight.start > selectionStart) {
+  //           newStart = selectionStart + 1;
+  //           newEnd -= selectionLength + 1;
+  //         }
+
+  //         return {
+  //           start: newStart,
+  //           end: newEnd,
+  //         };
+  //       })
+  //       .filter((highlight) => highlight.start !== highlight.end);
+
+  //     const updatedPreviousHighlights = previousHighlights
+  //       .map((highlight) => {
+  //         let newStart = highlight.start;
+  //         let newEnd = highlight.end;
+
+  //         if (highlight.start > selectionEnd) {
+  //           newStart -= selectionLength + 1;
+  //           newEnd -= selectionLength + 1;
+  //         } else if (highlight.start > selectionStart) {
+  //           newStart = selectionStart + 1;
+  //           newEnd -= selectionLength + 1;
+  //         }
+
+  //         return {
+  //           start: newStart,
+  //           end: newEnd,
+  //         };
+  //       })
+  //       .filter((highlight) => highlight.start !== highlight.end);
+
+  //     setHighlights(updatedHighlights);
+  //     setPreviousHighlights(updatedPreviousHighlights);
+  //     console.log("keydown");
+  //   }
+  // };
+
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  //   if (event.key === "Backspace" || event.key === "Delete") {
+  //     const selectionLength = selectionEnd - selectionStart;
+
+  //     if (selectionLength === 0) {
+  //       const updatedText =
+  //         textToHighlight.slice(0, selectionStart) +
+  //         textToHighlight.slice(selectionStart + 1);
+
+  //       setTextToHighlight(updatedText);
+
+  //       const updatedHighlights = highlights
+  //         .map((highlight) => {
+  //           let newStart = highlight.start;
+  //           let newEnd = highlight.end;
+
+  //           if (highlight.start > cursorPosition) {
+  //             newStart -= 2; // Reduce by 2 instead of 1
+  //             newEnd -= 2; // Reduce by 2 instead of 1
+  //           }
+
+  //           return {
+  //             start: newStart,
+  //             end: newEnd,
+  //           };
+  //         })
+  //         .filter((highlight) => highlight.start !== highlight.end);
+
+  //       const updatedPreviousHighlights = previousHighlights
+  //         .map((highlight) => {
+  //           let newStart = highlight.start;
+  //           let newEnd = highlight.end;
+
+  //           if (highlight.start > cursorPosition) {
+  //             newStart -= 2; // Reduce by 2 instead of 1
+  //             newEnd -= 2; // Reduce by 2 instead of 1
+  //           }
+
+  //           return {
+  //             start: newStart,
+  //             end: newEnd,
+  //           };
+  //         })
+  //         .filter((highlight) => highlight.start !== highlight.end);
+
+  //       setHighlights(updatedHighlights);
+  //       setPreviousHighlights(updatedPreviousHighlights);
+  //       console.log("keydown");
+  //     } else {
+  //       const updatedText =
+  //         textToHighlight.slice(0, selectionStart) +
+  //         textToHighlight.slice(selectionEnd);
+
+  //       setTextToHighlight(updatedText);
+
+  //       const updatedHighlights = highlights
+  //         .map((highlight) => {
+  //           let newStart = highlight.start;
+  //           let newEnd = highlight.end;
+
+  //           if (highlight.start > selectionEnd) {
+  //             newStart -= selectionLength + 1;
+  //             newEnd -= selectionLength + 1;
+  //           } else if (highlight.start > selectionStart) {
+  //             newStart = selectionStart + 1;
+  //             newEnd -= selectionLength + 1;
+  //           }
+
+  //           return {
+  //             start: newStart,
+  //             end: newEnd,
+  //           };
+  //         })
+  //         .filter((highlight) => highlight.start !== highlight.end);
+
+  //       const updatedPreviousHighlights = previousHighlights
+  //         .map((highlight) => {
+  //           let newStart = highlight.start;
+  //           let newEnd = highlight.end;
+
+  //           if (highlight.start > selectionEnd) {
+  //             newStart -= selectionLength + 1;
+  //             newEnd -= selectionLength + 1;
+  //           } else if (highlight.start > selectionStart) {
+  //             newStart = selectionStart + 1;
+  //             newEnd -= selectionLength + 1;
+  //           }
+
+  //           return {
+  //             start: newStart,
+  //             end: newEnd,
+  //           };
+  //         })
+  //         .filter((highlight) => highlight.start !== highlight.end);
+
+  //       setHighlights(updatedHighlights);
+  //       setPreviousHighlights(updatedPreviousHighlights);
+  //       console.log("keydown");
+  //     }
+  //   }
+  // };
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Backspace" || event.key === "Delete") {
+      const selectionLength = selectionEnd - selectionStart;
+
+      if (selectionLength === 0) {
+        const updatedText =
+          // textToHighlight.slice(0, selectionStart) +
+          // textToHighlight.slice(selectionStart + 1);
+          textToHighlight.slice(0, cursorPosition) +
+          textToHighlight.slice(cursorPosition);
+
+        setTextToHighlight(updatedText);
+
+        const updatedHighlights = highlights
+          .map((highlight) => {
+            if (
+              (highlight.start <= cursorPosition &&
+                highlight.end <= cursorPosition) ||
+              (highlight.start >= cursorPosition &&
+                highlight.end >= cursorPosition)
+            ) {
+              return highlight; // Preserve non-affected highlights
+            } else if (
+              highlight.start < cursorPosition &&
+              highlight.end > cursorPosition
+            ) {
+              // Highlight spans across cursor, split into two highlights
+              return [
+                {
+                  start: highlight.start,
+                  end: cursorPosition - 1,
+                },
+                {
+                  start: cursorPosition,
+                  end: highlight.end - 1,
+                },
+              ];
+            } else if (highlight.start > cursorPosition) {
+              return {
+                start: highlight.start - 1,
+                end: highlight.end - 1,
+              };
+            } else {
+              return highlight;
+            }
+          })
+          .flat();
+
+        const updatedPreviousHighlights = previousHighlights
+          .map((highlight) => {
+            if (
+              (highlight.start <= cursorPosition &&
+                highlight.end <= cursorPosition) ||
+              (highlight.start >= cursorPosition &&
+                highlight.end >= cursorPosition)
+            ) {
+              return highlight; // Preserve non-affected highlights
+            } else if (
+              highlight.start < cursorPosition &&
+              highlight.end > cursorPosition
+            ) {
+              // Highlight spans across cursor, split into two highlights
+              return [
+                {
+                  start: highlight.start,
+                  end: cursorPosition - 1,
+                },
+                {
+                  start: cursorPosition,
+                  end: highlight.end - 1,
+                },
+              ];
+            } else if (highlight.start > cursorPosition) {
+              return {
+                start: highlight.start - 1,
+                end: highlight.end - 1,
+              };
+            } else {
+              return highlight;
+            }
+          })
+          .flat();
+
+        setHighlights(updatedHighlights);
+        setPreviousHighlights(updatedPreviousHighlights);
+        // setCursorPosition(cursorPosition - 1);
+        console.log("keydown");
+      } else {
+        const updatedText =
+          // textToHighlight.slice(0, selectionStart) +
+          // textToHighlight.slice(selectionEnd);
+          textToHighlight.slice(0, cursorPosition) +
+          textToHighlight.slice(cursorPosition);
+
+        setTextToHighlight(updatedText);
+
+        const updatedHighlights = highlights
+          .map((highlight) => {
+            let newStart = highlight.start;
+            let newEnd = highlight.end;
+
+            if (highlight.start > selectionEnd) {
+              newStart -= selectionLength + 1;
+              newEnd -= selectionLength + 1;
+            } else if (highlight.start > selectionStart) {
+              newStart = selectionStart + 1;
+              newEnd -= selectionLength + 1;
+            }
+
+            return {
+              start: newStart,
+              end: newEnd,
+            };
+          })
+          .filter((highlight) => highlight.start !== highlight.end);
+
+        const updatedPreviousHighlights = previousHighlights
+          .map((highlight) => {
+            let newStart = highlight.start;
+            let newEnd = highlight.end;
+
+            if (highlight.start > selectionEnd) {
+              newStart -= selectionLength + 1;
+              newEnd -= selectionLength + 1;
+            } else if (highlight.start > selectionStart) {
+              newStart = selectionStart + 1;
+              newEnd -= selectionLength + 1;
+            }
+
+            return {
+              start: newStart,
+              end: newEnd,
+            };
+          })
+          .filter((highlight) => highlight.start !== highlight.end);
+
+        setHighlights(updatedHighlights);
+        setPreviousHighlights(updatedPreviousHighlights);
+        console.log("keydown");
+      }
+    }
   };
 
   return (
