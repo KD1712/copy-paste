@@ -1,5 +1,3 @@
-
-
 import React, { useState } from "react";
 
 interface Highlight {
@@ -39,6 +37,7 @@ function CoordinateTesting() {
           : highlight.start,
       end: highlight.end > cursorPosition ? highlight.end + 1 : highlight.end,
     }));
+    console.log(updatedHighlights, updatedPreviousHighlights, "onchange");
 
     const isCursorInsidePreviousHighlight = previousHighlights.some(
       (highlight) => {
@@ -58,6 +57,14 @@ function CoordinateTesting() {
       setTextToHighlight(newText);
       setCursorPosition(event.target.selectionStart || 0);
       const updatedHighlights = highlights.map((highlight) => ({
+        // {
+        //   start: highlight.start,
+        //   //   end: cursorPosition - 1,
+        //   // },
+        //   // {
+        //   //   start: cursorPosition,
+        //   end: highlight.end - 1,
+        // },
         start:
           highlight.start >= cursorPosition
             ? highlight.start + 1
@@ -85,9 +92,8 @@ function CoordinateTesting() {
     setCursorPosition(event.target.selectionStart || 0);
     setHighlights(updatedHighlights);
     setPreviousHighlights(updatedPreviousHighlights);
+    console.log("handelChange");
   };
- 
-  
 
   const handleCursorPositionChange = (
     event: React.SyntheticEvent<HTMLTextAreaElement>
@@ -138,47 +144,196 @@ function CoordinateTesting() {
     event.preventDefault();
   };
 
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  //   if (event.key === "Backspace" || event.key === "Delete") {
+  //     const selectionLength = selectionEnd - selectionStart;
+  //     if (selectionLength === 0) {
+  //       const updatedText =
+  //         // textToHighlight.slice(0, selectionStart) +
+  //         // textToHighlight.slice(selectionStart + 1);
+  //         textToHighlight.slice(0, cursorPosition) +
+  //         textToHighlight.slice(cursorPosition);
+
+  //       setTextToHighlight(updatedText);
+
+  //       const updatedHighlights = highlights
+  //         .map((highlight) => {
+  //           if (
+  //             (highlight.start <= cursorPosition &&
+  //               highlight.end <= cursorPosition) ||
+  //             (highlight.start >= cursorPosition &&
+  //               highlight.end >= cursorPosition)
+  //           ) {
+  //             return highlight; // Preserve non-affected highlights
+  //           } else if (
+  //             highlight.start < cursorPosition &&
+  //             highlight.end > cursorPosition
+  //           ) {
+  //             // Highlight spans across cursor, split into two highlights
+  //             return [
+  //               {
+  //                 start: highlight.start,
+  //                 end: cursorPosition - 1,
+  //               },
+  //               {
+  //                 start: cursorPosition,
+  //                 end: highlight.end - 1,
+  //               },
+  //             ];
+  //           } else if (highlight.start > cursorPosition) {
+  //             return {
+  //               start: highlight.start - 1,
+  //               end: highlight.end - 1,
+  //             };
+  //           } else {
+  //             return highlight;
+  //           }
+  //         })
+  //         .flat();
+
+  //       const updatedPreviousHighlights = previousHighlights
+  //         .map((highlight) => {
+  //           if (
+  //             (highlight.start <= cursorPosition &&
+  //               highlight.end <= cursorPosition) ||
+  //             (highlight.start >= cursorPosition &&
+  //               highlight.end >= cursorPosition)
+  //           ) {
+  //             return highlight; // Preserve non-affected highlights
+  //           } else if (
+  //             highlight.start < cursorPosition &&
+  //             highlight.end > cursorPosition
+  //           ) {
+  //             // Highlight spans across cursor, split into two highlights
+  //             return [
+  //               {
+  //                 start: highlight.start,
+  //                 end: cursorPosition - 1,
+  //               },
+  //               {
+  //                 start: cursorPosition,
+  //                 end: highlight.end - 1,
+  //               },
+  //             ];
+  //           } else if (highlight.start > cursorPosition) {
+  //             return {
+  //               start: highlight.start - 1,
+  //               end: highlight.end - 1,
+  //             };
+  //           } else {
+  //             return highlight;
+  //           }
+  //         })
+  //         .flat();
+
+  //       setHighlights(updatedHighlights);
+  //       setPreviousHighlights(updatedPreviousHighlights);
+  //       // setCursorPosition(cursorPosition - 1);
+  //       console.log("keydown");
+  //     } else {
+  //       const updatedText =
+  //         textToHighlight.slice(0, selectionStart) +
+  //         textToHighlight.slice(selectionEnd);
+  //       // textToHighlight.slice(0, cursorPosition) +
+  //       // textToHighlight.slice(cursorPosition);
+  //       setTextToHighlight(updatedText);
+
+  //       const updatedHighlights = highlights
+  //         .map((highlight) => {
+  //           let newStart = highlight.start;
+  //           let newEnd = highlight.end;
+
+  //           if (highlight.start > selectionEnd) {
+  //             newStart -= selectionLength + 1;
+  //             newEnd -= selectionLength + 1;
+  //           } else if (highlight.start > selectionStart) {
+  //             newStart = selectionStart + 1;
+  //             newEnd -= selectionLength + 1;
+  //           }
+
+  //           return {
+  //             start: newStart,
+  //             end: newEnd,
+  //           };
+  //         })
+  //         .filter((highlight) => highlight.start !== highlight.end);
+
+  //       const updatedPreviousHighlights = previousHighlights
+  //         .map((highlight) => {
+  //           let newStart = highlight.start;
+  //           let newEnd = highlight.end;
+
+  //           if (highlight.start > selectionEnd) {
+  //             newStart -= selectionLength + 1;
+  //             newEnd -= selectionLength + 1;
+  //           } else if (highlight.start > selectionStart) {
+  //             newStart = selectionStart + 1;
+  //             newEnd -= selectionLength + 1;
+  //           }
+
+  //           return {
+  //             start: newStart,
+  //             end: newEnd,
+  //           };
+  //         })
+  //         .filter((highlight) => highlight.start !== highlight.end);
+
+  //       setHighlights(updatedHighlights);
+  //       setPreviousHighlights(updatedPreviousHighlights);
+  //       console.log("keydown");
+  //     }
+  //   }
+  // };
+
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === "Backspace" || event.key === "Delete") {
       const selectionLength = selectionEnd - selectionStart;
-
       if (selectionLength === 0) {
         const updatedText =
-          // textToHighlight.slice(0, selectionStart) +
-          // textToHighlight.slice(selectionStart + 1);
-          textToHighlight.slice(0, cursorPosition) +
+          textToHighlight.slice(0, cursorPosition - 1) +
           textToHighlight.slice(cursorPosition);
 
         setTextToHighlight(updatedText);
 
+        const isCursorInsidePreviousHighlight = previousHighlights.some(
+          (highlight) =>
+            cursorPosition > highlight.start && cursorPosition <= highlight.end
+        );
+        console.log("inside isCursorInsidePreviousHighlight");
+
         const updatedHighlights = highlights
           .map((highlight) => {
             if (
-              (highlight.start <= cursorPosition &&
-                highlight.end <= cursorPosition) ||
-              (highlight.start >= cursorPosition &&
-                highlight.end >= cursorPosition)
+              highlight.start < cursorPosition &&
+              highlight.end < cursorPosition
+              //  ||
+              //   (highlight.start >= cursorPosition &&
+              //     highlight.end >= cursorPosition)
             ) {
               return highlight; // Preserve non-affected highlights
             } else if (
               highlight.start < cursorPosition &&
-              highlight.end > cursorPosition
+              highlight.end >= cursorPosition
+              //isCursorInsidePreviousHighlight
             ) {
               // Highlight spans across cursor, split into two highlights
               return [
                 {
-                  start: highlight.start,
-                  end: cursorPosition - 1,
-                },
-                {
-                  start: cursorPosition,
-                  end: highlight.end - 1,
+                  start: highlight.start - 1,
+                  //   end: cursorPosition - 1,
+                  // },
+                  // {
+                  //   start: cursorPosition,
+                  end: highlight.end - 2,
                 },
               ];
-            } else if (highlight.start > cursorPosition) {
+            } else if (
+              highlight.start > cursorPosition &&
+              highlight.end > cursorPosition
+            ) {
               return {
-                start: highlight.start - 1,
-                end: highlight.end - 1,
+                start: highlight.start - 2,
+                end: highlight.end - 2,
               };
             } else {
               return highlight;
@@ -189,42 +344,94 @@ function CoordinateTesting() {
         const updatedPreviousHighlights = previousHighlights
           .map((highlight) => {
             if (
-              (highlight.start <= cursorPosition &&
-                highlight.end <= cursorPosition) ||
-              (highlight.start >= cursorPosition &&
-                highlight.end >= cursorPosition)
+              highlight.start < cursorPosition &&
+              highlight.end < cursorPosition
+              //    ||
+              // (highlight.start >= cursorPosition &&
+              //   highlight.end >= cursorPosition)
             ) {
               return highlight; // Preserve non-affected highlights
-            } else if (
-              highlight.start < cursorPosition &&
-              highlight.end > cursorPosition
-            ) {
-              // Highlight spans across cursor, split into two highlights
+            } else if (isCursorInsidePreviousHighlight) {
               return [
                 {
-                  start: highlight.start,
-                  end: cursorPosition - 1,
-                },
-                {
-                  start: cursorPosition,
-                  end: highlight.end - 1,
+                  start: highlight.start - 1,
+                  //   end: cursorPosition - 1,
+                  // },
+                  // {
+                  //   start: cursorPosition,
+                  end: highlight.end - 2,
                 },
               ];
-            } else if (highlight.start > cursorPosition) {
+            }
+            // else if (
+            //   highlight.start < cursorPosition &&
+            //   highlight.end > cursorPosition
+            // ) {
+            //   // Highlight spans across cursor, split into two highlights
+            //   return [
+            //     {
+            //       start: highlight.start,
+            //       end: cursorPosition - 1,
+            //     },
+            //     {
+            //       start: cursorPosition,
+            //       end: highlight.end - 1,
+            //     },
+            //   ];
+            // }
+            else if (
+              highlight.start > cursorPosition &&
+              highlight.end > cursorPosition
+            ) {
               return {
-                start: highlight.start - 1,
-                end: highlight.end - 1,
+                start: highlight.start - 2,
+                end: highlight.end - 2,
               };
             } else {
               return highlight;
             }
           })
           .flat();
+        console.log(updatedHighlights, updatedPreviousHighlights, "onkeydown");
+        // if (isCursorInsidePreviousHighlight) {
+        //   // Reduce the end coordinate of the previous highlight
+        //   const updatedPreviousHighlightsWithCursor =
+        //     updatedPreviousHighlights.map((highlight) => {
+        //       if (
+        //         cursorPosition >= highlight.start &&
+        //         cursorPosition < highlight.end
+        //       ) {
+        //         return {
+        //           start: highlight.start,
+        //           end: highlight.end - 1,
+        //         };
+        //       }
+        //       return highlight;
+        //     });
 
-        setHighlights(updatedHighlights);
+        //   // Reduce the coordinates of highlights greater than cursorPosition
+        //   const updatedHighlightsWithCursor =
+        //     updatedPreviousHighlightsWithCursor.map((highlight) => ({
+        //       start:
+        //         highlight.start > cursorPosition
+        //           ? highlight.start - 1
+        //           : highlight.start,
+        //       end:
+        //         highlight.end > cursorPosition
+        //           ? highlight.end - 1
+        //           : highlight.end,
+        //     }));
+
         setPreviousHighlights(updatedPreviousHighlights);
+        setHighlights(updatedHighlights);
+        //   // You might need to update textToHighlight here too
+        // } else {
+        //   setPreviousHighlights(updatedPreviousHighlights);
+        //   setHighlights(updatedHighlights);
+        // }
+
         // setCursorPosition(cursorPosition - 1);
-        console.log("keydown");
+        console.log("keydown1");
       } else {
         const updatedText =
           textToHighlight.slice(0, selectionStart) +
