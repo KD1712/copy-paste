@@ -1,0 +1,50 @@
+.container {
+    position: relative;
+    width: 400px; 
+    height: 250px; 
+    border: 1px solid white;
+  }
+  
+  .textarea-mirror,
+  textarea {
+    font-family: 'Arial', sans-serif;
+    font-size: 16px;
+    padding: 8px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 1px solid transparent;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    resize: none; /* Prevent textarea resizing */
+    box-sizing: border-box;
+    line-height: 1.2; /* Adjust this to match your desired line height */
+  }
+  
+  .textarea-mirror {
+    pointer-events: none;
+    z-index: 1;
+    background-color: transparent;
+    overflow: hidden; 
+  }
+
+  .mirror-content::-webkit-scrollbar {
+    display: none;
+  }
+    
+  .mirror-content {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+    width: calc(100% - 20px);  /* You might need to adjust the 20px based on your scrollbar's width */
+    height: 100%;
+    overflow: auto;
+    position: relative;
+  }
+
+  textarea {
+    background-color: transparent;
+    z-index: 2;
+  }
+  

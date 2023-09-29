@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import './coordinateTesting.css';
 
 interface Highlight {
   start: number;
@@ -8,7 +9,7 @@ interface Highlight {
 function CoordinateTesting() {
   const [textToHighlight, setTextToHighlight] = useState<string>("");
   const [cursorPosition, setCursorPosition] = useState<number>(0);
-  const [copiedText, setCopiedText] = useState<string | null>(null);
+  // const [copiedText, setCopiedText] = useState<string | null>(null);
   const [selectionStart, setSelectionStart] = useState<number>(0);
   const [selectionEnd, setSelectionEnd] = useState<number>(0);
   const [highlights, setHighlights] = useState<Highlight[]>([]);
@@ -98,7 +99,7 @@ function CoordinateTesting() {
 
   const handlePaste = (event: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const pastedText = event.clipboardData.getData("text");
-    setCopiedText(pastedText);
+    // setCopiedText(pastedText);
 
     const newText =
       textToHighlight.slice(0, cursorPosition) +
@@ -519,44 +520,77 @@ function CoordinateTesting() {
     }
   };
 
+  const handleTextareaScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
+    const mirrorContent = document.querySelector('.mirror-content') as HTMLElement;
+    if (mirrorContent) {
+      mirrorContent.scrollTop = e.currentTarget.scrollTop;
+    }
+  };
+  
+
   return (
-    <div>
-      <h1>Text Highlighter</h1>
+    <div style={{margin:'1rem'}}>
+    <h2>Text editor</h2>
+    <div className="container">
+      <div className="textarea-mirror">
+        <div className="mirror-content">
+          {textToHighlight.split("").map((char, index) => {
+            const highlightStyle = highlights.some(h => index >= h.start && index < h.end)
+              ? { backgroundColor: "yellow" }
+              : {};
+            return <span key={index} style={highlightStyle}>{char}</span>;
+          })}
+        </div>
+      </div>
       <textarea
         value={textToHighlight}
         onChange={handleTextareaChange}
         onSelect={handleCursorPositionChange}
         onPaste={handlePaste}
         onKeyDown={handleKeyDown}
-        rows={5}        
+        onScroll={handleTextareaScroll}
+        rows={5}
         cols={50}
       />
-      <p>Cursor Position: {cursorPosition}</p>
-      <p>Copied Text: {copiedText}</p>
-      <p>prev {previousTextLength}</p>
-      <p>Highlighted Text:</p>
-      <div style={{ whiteSpace: "pre-wrap" }}>
-        {textToHighlight.split("").map((char, index) => {
-          const highlightStyle = highlights.some(
-            (h) =>
-              (index >= h.start && index < h.end) ||
-              (previousHighlights.some(
-                (prevH) => index >= prevH.start && index < prevH.end
-              ) &&
-                !highlights.some(
-                  (newH) => index >= newH.start && index < newH.end
-                ))
-          )
-            ? { backgroundColor: "yellow", color: "black" }
-            : { backgroundColor: "inherit" };
-          return (
-            <span key={index} style={highlightStyle}>
-              {char}
-            </span>
-          );
-        })}
-      </div>
     </div>
+    </div>
+    // <div>
+    //   <h1>Text Highlighter</h1>
+    //   <textarea
+    //     value={textToHighlight}
+    //     onChange={handleTextareaChange}
+    //     onSelect={handleCursorPositionChange}
+    //     onPaste={handlePaste}
+    //     onKeyDown={handleKeyDown}
+    //     rows={5}        
+    //     cols={50}
+    //   />
+    //   <p>Cursor Position: {cursorPosition}</p>
+    //   <p>Copied Text: {copiedText}</p>
+    //   <p>prev {previousTextLength}</p>
+    //   <p>Highlighted Text:</p>
+    //   <div style={{ whiteSpace: "pre-wrap" }}>
+    //     {textToHighlight.split("").map((char, index) => {
+    //       const highlightStyle = highlights.some(
+    //         (h) =>
+    //           (index >= h.start && index < h.end) ||
+    //           (previousHighlights.some(
+    //             (prevH) => index >= prevH.start && index < prevH.end
+    //           ) &&
+    //             !highlights.some(
+    //               (newH) => index >= newH.start && index < newH.end
+    //             ))
+    //       )
+    //         ? { backgroundColor: "yellow", color: "black" }
+    //         : { backgroundColor: "inherit" };
+    //       return (
+    //         <span key={index} style={highlightStyle}>
+    //           {char}
+    //         </span>
+    //       );
+    //     })}
+    //   </div>
+    // </div>
   );
 }
 
