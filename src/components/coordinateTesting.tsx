@@ -20,6 +20,7 @@ function CoordinateTesting() {
     event: React.ChangeEvent<HTMLTextAreaElement>
   ) => {
     const updatedText = event.target.value;
+    const newCursorPosition = event.target.selectionStart || 0;
 
     // Update coordinates for highlights that are on the right side of the cursor
     const updatedHighlights = highlights.map((highlight) => ({
@@ -37,7 +38,36 @@ function CoordinateTesting() {
           : highlight.start,
       end: highlight.end > cursorPosition ? highlight.end + 1 : highlight.end,
     }));
-    console.log(updatedHighlights, updatedPreviousHighlights, "onchange");
+    let highlightToSplit = null;
+
+    // Find the highlight where the cursor is inside.
+    for (const highlight of updatedHighlights) {
+      if (
+        newCursorPosition > highlight.start &&
+        newCursorPosition < highlight.end
+      ) {
+        highlightToSplit = highlight;
+        break;
+      }
+    }
+
+    // If a highlight to split is found, remove it and replace with two new highlights.
+    if (highlightToSplit) {
+      const indexOfHighlight = updatedHighlights.indexOf(highlightToSplit);
+      updatedHighlights.splice(
+        indexOfHighlight,
+        1,
+        {
+          start: highlightToSplit.start,
+          end: newCursorPosition-1,
+        },
+        {
+          start: newCursorPosition ,
+          end: highlightToSplit.end,
+        }
+      );
+    }
+    console.log(updatedHighlights, "onchange");
 
     const isCursorInsidePreviousHighlight = previousHighlights.some(
       (highlight) => {
@@ -82,7 +112,9 @@ function CoordinateTesting() {
     console.log(updatedText.length, "updateLEN");
     setPreviousTextLength(updatedText.length);
     console.log(previousTextLength, "prevtextLEN");
-    setCursorPosition(event.target.selectionStart || 0);
+    // setCursorPosition(event.target.selectionStart || 0);
+    setCursorPosition(newCursorPosition);
+
     setHighlights(updatedHighlights);
     setPreviousHighlights(updatedPreviousHighlights);
   };
@@ -324,45 +356,7 @@ function CoordinateTesting() {
         );
         console.log("inside isCursorInsidePreviousHighlight");
 
-        // const updatedHighlights = highlights
-        //   .map((highlight) => {
-        //     if (
-        //       highlight.start < cursorPosition &&
-        //       highlight.end < cursorPosition
-        //       //  ||
-        //       //   (highlight.start >= cursorPosition &&
-        //       //     highlight.end >= cursorPosition)
-        //     ) {
-        //       return highlight; // Preserve non-affected highlights
-        //     } else if (
-        //       // highlight.start < cursorPosition &&
-        //       // highlight.end >= cursorPosition
-        //       isCursorInsidePreviousHighlight
-        //     ) {
-        //       // Highlight spans across cursor, split into two highlights
-        //       return [
-        //         {
-        //           start: highlight.start - 1,
-        //           //   end: cursorPosition - 1,
-        //           // },
-        //           // {
-        //           //   start: cursorPosition,
-        //           end: highlight.end - 2,
-        //         },
-        //       ];
-        //     } else if (
-        //       highlight.start > cursorPosition &&
-        //       highlight.end > cursorPosition
-        //     ) {
-        //       return {
-        //         start: highlight.start - 2,
-        //         end: highlight.end - 2,
-        //       };
-        //     } else {
-        //       return highlight;
-        //     }
-        //   })
-        //   .flat();
+     
         const updatedHighlights = highlights
           .map((highlight) => {
             if (
@@ -418,22 +412,7 @@ function CoordinateTesting() {
                 },
               ];
             }
-            // else if (
-            //   highlight.start < cursorPosition &&
-            //   highlight.end > cursorPosition
-            // ) {
-            //   // Highlight spans across cursor, split into two highlights
-            //   return [
-            //     {
-            //       start: highlight.start,
-            //       end: cursorPosition - 1,
-            //     },
-            //     {
-            //       start: cursorPosition,
-            //       end: highlight.end - 1,
-            //     },
-            //   ];
-            // }
+          
             else if (
               highlight.start > cursorPosition &&
               highlight.end > cursorPosition
