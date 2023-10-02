@@ -59,10 +59,10 @@ function CoordinateTesting() {
         1,
         {
           start: highlightToSplit.start,
-          end: newCursorPosition-1,
+          end: newCursorPosition - 1,
         },
         {
-          start: newCursorPosition ,
+          start: newCursorPosition,
           end: highlightToSplit.end,
         }
       );
@@ -515,7 +515,7 @@ function CoordinateTesting() {
         <div className="mirror-content">
           {textToHighlight.split("").map((char, index) => {
             const highlightStyle = highlights.some(h => index >= h.start && index < h.end)
-              ? { backgroundColor: "yellow" }
+              ? { backgroundColor: "yellow" , color: 'black' }
               : {};
             return <span key={index} style={highlightStyle}>{char}</span>;
           })}
@@ -530,6 +530,7 @@ function CoordinateTesting() {
         onScroll={handleTextareaScroll}
         rows={5}
         cols={50}
+        style={{color:'transparent'}}
       />
     </div>
     </div>
