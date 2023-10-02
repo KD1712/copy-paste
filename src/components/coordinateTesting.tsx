@@ -530,7 +530,7 @@ function CoordinateTesting() {
         onScroll={handleTextareaScroll}
         rows={5}
         cols={50}
-        style={{color:'transparent'}}
+        style={{color:'white', opacity:'0.3'}}
       />
     </div>
     </div>
