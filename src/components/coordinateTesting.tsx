@@ -515,7 +515,7 @@ function CoordinateTesting() {
         <div className="mirror-content">
           {textToHighlight.split("").map((char, index) => {
             const highlightStyle = highlights.some(h => index >= h.start && index < h.end)
-              ? { backgroundColor: "yellow" , color: 'black' }
+              ? { backgroundColor: "orange" }
               : {};
             return <span key={index} style={highlightStyle}>{char}</span>;
           })}
@@ -530,7 +530,7 @@ function CoordinateTesting() {
         onScroll={handleTextareaScroll}
         rows={5}
         cols={50}
-        style={{color:'white', opacity:'0.3'}}
+        // style={{color:'white', opacity:'0.3'}}
       />
     </div>
     </div>
