@@ -34,6 +34,10 @@
     display: none;
   }
     
+  .mirror-content span:last-child {
+    color: transparent;
+}
+
   .mirror-content {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */

@@ -499,40 +499,48 @@ function CoordinateTesting() {
     }
   };
 
-  const handleTextareaScroll = (e: React.UIEvent<HTMLTextAreaElement>) => {
-    const mirrorContent = document.querySelector('.mirror-content') as HTMLElement;
-    if (mirrorContent) {
-      mirrorContent.scrollTop = e.currentTarget.scrollTop;
-    }
-  };
+  function handleTextareaScroll(event: React.UIEvent<HTMLTextAreaElement>) {
+    const textarea = event.currentTarget;
+    const mirrorContent = document.querySelector(".mirror-content") as HTMLDivElement | null;
   
+    if (mirrorContent) {
+      mirrorContent.scrollTop = textarea.scrollTop;
+      mirrorContent.scrollLeft = textarea.scrollLeft;
+    }
+  }  
+  
+  const escapeHTML = (str: string | null) => {
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
 
   return (
     <div style={{margin:'1rem'}}>
-    <h2>Text editor</h2>
-    <div className="container">
-      <div className="textarea-mirror">
-        <div className="mirror-content">
-          {textToHighlight.split("").map((char, index) => {
-            const highlightStyle = highlights.some(h => index >= h.start && index < h.end)
-              ? { backgroundColor: "orange" }
-              : {};
-            return <span key={index} style={highlightStyle}>{char}</span>;
-          })}
+      <h2>Text editor</h2>
+      <div className="container">
+        <div className="textarea-mirror">
+          <div className="mirror-content">
+            {textToHighlight.split("").concat(' ').map((char, index) => {
+              char = escapeHTML(char);
+              const highlightStyle = highlights.some(h => index >= h.start && index < h.end)
+                ? { backgroundColor: "orange" }
+                : {};
+              return <span key={index} style={highlightStyle}>{char}</span>;
+            })}
+          </div>
         </div>
+        <textarea
+          value={textToHighlight}
+          onChange={handleTextareaChange}
+          onSelect={handleCursorPositionChange}
+          onPaste={handlePaste}
+          onKeyDown={handleKeyDown}
+          onScroll={handleTextareaScroll}
+          rows={5}
+          cols={50}
+        />
       </div>
-      <textarea
-        value={textToHighlight}
-        onChange={handleTextareaChange}
-        onSelect={handleCursorPositionChange}
-        onPaste={handlePaste}
-        onKeyDown={handleKeyDown}
-        onScroll={handleTextareaScroll}
-        rows={5}
-        cols={50}
-        // style={{color:'white', opacity:'0.3'}}
-      />
-    </div>
     </div>
     // <div>
     //   <h1>Text Highlighter</h1>
